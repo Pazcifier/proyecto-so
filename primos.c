@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <fstream>
 
 void AsignarLineas(int n, int cont, int *lineas);
 void CrearPoH(int n);
