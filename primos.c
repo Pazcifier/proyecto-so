@@ -8,15 +8,14 @@ void VerificarPrimo();
 
 int main(int argc, char const *argv[]) {
 
-  print(argv[4]);
-  int n = *argv[4];  //Cantidad de procesos/hilos
+  int n = atoi(argv[4]);  //Cantidad de procesos/hilos
   int cont = 0; //Cantidad de líneas en el archivo
   int lineas = 0; //Las lineas con la que le toca trabajar
   int *apLineas = &lineas; //Apuntador a lineas (para referenciación)
 
-  //CrearPoH(n);
+  CrearPoH(n);
   //AsignarLineas(n, cont, apLineas);
-
+  return 0;
 }
 
 void AsignarLineas(int n, int cont, int *lineas) {
@@ -32,9 +31,7 @@ void CrearPoH(int n) {
     if (fork() == 0)
       break;
   }
-
   printf("Soy un proceso\n");
-
 }
 
 void VerificarPrimo() {
