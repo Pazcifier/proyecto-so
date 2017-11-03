@@ -6,15 +6,16 @@ void AsignarLineas(int n, int cont, int *lineas);
 void CrearPoH(int n);
 void VerificarPrimo();
 
-int main() {
+int main(int argc, char const *argv[]) {
 
-  int n = 0;  //Cantidad de procesos/hilos
+  print(argv[4]);
+  int n = *argv[4];  //Cantidad de procesos/hilos
   int cont = 0; //Cantidad de líneas en el archivo
   int lineas = 0; //Las lineas con la que le toca trabajar
   int *apLineas = &lineas; //Apuntador a lineas (para referenciación)
 
-  CrearPoH(n);
-  AsignarLineas(n, cont, apLineas);
+  //CrearPoH(n);
+  //AsignarLineas(n, cont, apLineas);
 
 }
 
