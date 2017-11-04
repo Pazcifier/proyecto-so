@@ -8,6 +8,7 @@ int VerificarPrimo(int num);
 int numLineas(FILE *fp);
 int lineaToInt(FILE *fp);
 void salidaPrimo ( int lineasT, int i, FILE *fp);
+void PosicionArchivo(FILE *fp);
 
 int main(int argc, char const *argv[]) {
 
@@ -18,7 +19,6 @@ int main(int argc, char const *argv[]) {
   int lineasTrabajadorUltimo = 0; //Lineas asignadas al maestro
   clock_t comienzo, fin; //Variables para tomar tiempo de ejecución
   double tiempo_cpu; //Usado para calcular el tiempo final
-
 
   fp=fopen(argv[1],"r");
   if (fp==NULL) {fputs ("File error",stderr); exit (1);
@@ -32,18 +32,24 @@ int main(int argc, char const *argv[]) {
       for(int i = 0; i < n; i++) {
         if (fork() == 0) {
           break;
-        }
-        if (i == n-1) {
-          salidaPrimo(lineasTrabajadorUltimo, i, fp);
-        } else {
-          salidaPrimo(lineasTrabajador, i, fp);
-        }
-      }
+        }else{
+        	if (i == (n-1)){
+
+            	salidaPrimo(lineasTrabajadorUltimo, i, fp);
+
+        	}else{
+
+        		salidaPrimo(lineasTrabajador, i, fp);
+
+        	}
+     	 }
+     	}
   }
+  fclose ( fp );
   fin = clock();
 
   tiempo_cpu = ((double) (fin - comienzo)) / CLOCKS_PER_SEC;
-  printf("Tiempo final de ejecución: %fs\n", tiempo_cpu);
+ printf("Tiempo final de ejecución: %fs\n", tiempo_cpu);
   return 0;
 }
 
@@ -93,8 +99,10 @@ void salidaPrimo ( int lineasT, int i, FILE *fp){
     char lineaS[20];
     sprintf(texto, "%d.txt", i);
     salida = fopen(texto,"w");
+ 	//fp= fopen(argv[1],"r");
+ 	//PosicionArchivo(fp,contLast);
 
-    for (int j = 0; j<lineasT; j++){
+    for (int j=0;j<lineasT; j++){
       lineaInt=lineaToInt(fp);
       sprintf(lineaS,"%d %d",lineaInt,VerificarPrimo(lineaInt));
       //printf("%s \n",lineaS);
@@ -103,4 +111,5 @@ void salidaPrimo ( int lineasT, int i, FILE *fp){
 
     }
     fclose(salida);
+    //fclose(fp);
 }
