@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 int VerificarPrimo(int num);
 int numLineas(FILE *fp);
@@ -15,6 +16,8 @@ int main(int argc, char const *argv[]) {
   int cont = 0; //Cantidad de líneas en el archivo
   int lineasTrabajador = 0; //Lineas asignadas al trabajador
   int lineasTrabajadorUltimo = 0; //Lineas asignadas al maestro
+  clock_t comienzo, fin; //Variables para tomar tiempo de ejecución
+  double tiempo_cpu; //Usado para calcular el tiempo final
 
 
   fp=fopen(argv[1],"r");
@@ -24,6 +27,8 @@ int main(int argc, char const *argv[]) {
       rewind(fp);
       lineasTrabajador = cont/n;
       lineasTrabajadorUltimo = cont%n + cont/n;
+
+      comienzo = clock();
       for(int i = 0; i < n; i++) {
         if (fork() == 0) {
           break;
@@ -32,7 +37,10 @@ int main(int argc, char const *argv[]) {
       }
   }
   fclose ( fp );
+  fin = clock();
 
+  tiempo_cpu = ((double) (fin - comienzo)) / CLOCKS_PER_SEC;
+  printf("Tiempo final de ejecución: %fs\n", tiempo_cpu);
   return 0;
 }
 
@@ -85,10 +93,10 @@ void salidaPrimo ( int lineasT, int i, FILE *fp){
 
     for (int j; j<lineasT; j++){
       lineaInt=lineaToInt(fp);
-      //primo=VerificarPrimo(lineaInt);
       sprintf(lineaS,"%d %d",lineaInt,VerificarPrimo(lineaInt));
       //printf("%s \n",lineaS);
-      //printf("%d \n",lineaToInt(fp));
+      //fprintf(salida, lineaS);
+      fprintf(salida, "%s \n",lineaS);
 
     }
     fclose(salida);
