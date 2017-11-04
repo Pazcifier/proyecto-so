@@ -28,7 +28,7 @@ int main(int argc, char const *argv[]) {
         if (fork() == 0) {
           break;
         }
-        salidaPrimo(lineasTrabajador, n, fp);
+        salidaPrimo(lineasTrabajador, i, fp);
       }
   }
   fclose ( fp );
@@ -87,7 +87,7 @@ void salidaPrimo ( int lineasT, int i, FILE *fp){
       lineaInt=lineaToInt(fp);
       //primo=VerificarPrimo(lineaInt);
       sprintf(lineaS,"%d %d",lineaInt,VerificarPrimo(lineaInt));
-      printf("%s \n",lineaS);
+      //printf("%s \n",lineaS);
       //printf("%d \n",lineaToInt(fp));
 
     }
