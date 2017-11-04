@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/wait.h>
 
 int VerificarPrimo(int num);
 int numLineas(FILE *fp);
@@ -19,6 +20,8 @@ int main(int argc, char const *argv[]) {
   int lineasTrabajadorUltimo = 0; //Lineas asignadas al maestro
   clock_t comienzo, fin; //Variables para tomar tiempo de ejecución
   double tiempo_cpu; //Usado para calcular el tiempo final
+  pid_t wpid;
+  int status = 0;
 
   fp=fopen(argv[1],"r");
   if (fp==NULL) {fputs ("File error",stderr); exit (1);
@@ -31,9 +34,7 @@ int main(int argc, char const *argv[]) {
       comienzo = clock();
       for(int i = 0; i < n; i++) {
         if (fork() == 0) {
-          break;
-        }else{
-        	if (i == (n-1)){
+          if (i == (n-1)){
 
             	salidaPrimo(lineasTrabajadorUltimo, i, fp);
 
@@ -42,8 +43,13 @@ int main(int argc, char const *argv[]) {
         		salidaPrimo(lineasTrabajador, i, fp);
 
         	}
-     	 }
+          break;
+        /*}else{
+
+     	 }*/
      	}
+    }
+    while((wpid = wait(&status)) > 0);
   }
   fclose ( fp );
   fin = clock();
