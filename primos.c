@@ -12,13 +12,10 @@ void salidaPrimo ( int lineasT, int i, FILE *fp);
 int main(int argc, char const *argv[]) {
 
   FILE *fp; //Variable para leer el archivo
-  int status; //Variable para esperar los procesos trabajadores
   int n = atoi(argv[4]);  //Cantidad de procesos/hilos trabajadores
   int cont = 0; //Cantidad de líneas en el archivo
   int lineasTrabajador = 0; //Lineas asignadas al trabajador
   int lineasTrabajadorUltimo = 0; //Lineas asignadas al maestro
-  pid_t pid;
-  pid_t pids[n]; //Array de procesos
   clock_t comienzo, fin; //Variables para tomar tiempo de ejecución
   double tiempo_cpu; //Usado para calcular el tiempo final
 
