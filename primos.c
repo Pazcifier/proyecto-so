@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <pthread.h>
+#include <signal.h>
 
 struct hilos_primos {
   int lineas;
@@ -16,9 +17,10 @@ int numLineas(FILE *fp);
 int lineaToInt(FILE *fp);
 void salidaPrimo ( int lineasT, int i, FILE *fp);
 void *salidaPrimoHilos (void* arg);
+void manejadorSignal(int signo);
 
 int main(int argc, char const *argv[]) {
-
+  int only=0;
   FILE *fp; //Variable para leer el archivo
   int n = atoi(argv[4]); //Cantidad de procesos/hilos trabajadores
   pthread_t hilos[n]; //Vector de hilos trabajadores
@@ -46,8 +48,10 @@ int main(int argc, char const *argv[]) {
         comienzo = clock();
         for(int i = 0; i < n; i++) {
           if (fork == 0) {
+            signal(SIGINT,SIG_IGN);
             break;
           } else {
+            if (only == 0){signal(SIGINT,manejadorSignal); only++;}
             if (i == (n-1)) {
               salidaPrimo(lineasTrabajadorUltimo, i, fp);
             } else {
@@ -55,7 +59,7 @@ int main(int argc, char const *argv[]) {
             }
           }
         }
-      } else if (strcmp(argv[2], "-h") == 0) {
+      } else if (strcmp(argv[2], "-t") == 0) {
         comienzo = clock();
         for(int i = 0; i < n; i++) {
           hp[i].archivo = fp;
@@ -79,7 +83,14 @@ int main(int argc, char const *argv[]) {
  }
   return 0;
 }
+void manejadorSignal(int signo){
+	if (signo == SIGINT){
+		printf("I’m sorry Dave. I’m afraid I can’t do that.\n");
+	
+	signal(SIGINT,SIG_DFL);
+	}
 
+}
 int numLineas(FILE *fp){
     const size_t tamlineas = 300;
     char *linea= malloc(tamlineas);
