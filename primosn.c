@@ -20,7 +20,7 @@ void *salidaPrimoHilos (void* arg);
 int main(int argc, char const *argv[]) {
 
   FILE *fp;
-  int n = atoi(argv[4]);
+  int n = atoi(argv[3]);
   pthread_t hilos[n];
   struct hilos_primos hp[n];
   int primosTotal = 0;
@@ -38,7 +38,7 @@ int main(int argc, char const *argv[]) {
     lineasTrabajador = cont/n;
     lineasTrabajadorUltimo = cont%n + cont/n;
 
-    if (strcmp(argv[2], "-h") == 0) {
+    
       for(int i = 0; i < n; i++) {
         hp[i].archivo = fp;
         hp[i].nroHilo = i;
@@ -59,7 +59,7 @@ int main(int argc, char const *argv[]) {
       for (int i = 0; i < n; i++) {
         primosTotal += hp[i].primos;
       }
-    }
+    
     printf("Cantidad total de primos: %d\n", primosTotal);
   }
   return 0;
@@ -69,22 +69,22 @@ void *salidaPrimoHilos (void* arg){
     struct hilos_primos *hp = (struct hilos_primos *) arg;
 
     int lineaInt;
-    FILE *salida;
+   // FILE *salida;
     char texto[10];
     char lineaS[20];
-    sprintf(texto, "%d.txt", hp->nroHilo);
-    salida = fopen(texto,"w");
+  //  sprintf(texto, "%d.txt", hp->nroHilo);
+   // salida = fopen(texto,"w");
 
     for (int j = 0;j< hp->lineas; j++){
       lineaInt=lineaToInt(hp->archivo);
       if (VerificarPrimo(lineaInt) == 1) {
        hp->primos += 1;
       }
-      sprintf(lineaS,"%d %d",lineaInt,VerificarPrimo(lineaInt));
-      fprintf(salida, "%s \n",lineaS);
+     // sprintf(lineaS,"%d %d",lineaInt,VerificarPrimo(lineaInt));
+     // fprintf(salida, "%s \n",lineaS);
 
     }
-    fclose(salida);
+   // fclose(salida);
     pthread_exit(0);
 }
 
