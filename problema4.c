@@ -11,7 +11,7 @@
 
 void Bicis(int a[], int type, FILE *fp);
 int CuantasB(FILE *fp,int type);
-void Paso(sem_t mutex, sem_t semDown, sem_t semUp, int DaPaso, int CedePaso);
+void SalidaBicis(int Bicis, FILE *salida, char sentido);
 
 int main(int argc, char const *argv[]){
 	//sem_t *semI =sem_open("Izq",O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP,1);
@@ -20,6 +20,7 @@ int main(int argc, char const *argv[]){
 	int der=0;
 	int izq=0;
 	FILE *fp;
+	FILE *salida;
 	fp=fopen(argv[1],"r");
 	 if (fp==NULL) {fputs ("File error",stderr); exit (1);
   	} else {
@@ -63,6 +64,7 @@ int main(int argc, char const *argv[]){
 			}
 			sem_init(&mutex, 1, 1);
 
+			salida = fopen("salidabicis.txt", "a");
 				//Con un while acá podría funcionar pero explota
 				for (int i = 0; i < 2; i++) {
 					if (fork() == 0) {
@@ -76,13 +78,13 @@ int main(int argc, char const *argv[]){
 								printf("TurnoLeft: %d\n", turnoLeft);
 								if (turnoLeft > turnoRight) {
 									turno = false;
-									EspejoJ = j;
 									//sem_wait(&semI);
 									//sem_post(&semD);
 									break;
 								} else {
 									//Pasa left
 									printf("Paso el %d del carril izquierdo\n", turnoLeft);
+									SalidaBicis(turnoLeft, salida, 'L');
 								}
 							}
 							sem_post(&mutex);
@@ -93,13 +95,13 @@ int main(int argc, char const *argv[]){
 							printf("TurnoRight: %d\n", turnoRight);
 							if (turnoRight > turnoLeft) {
 								turno = true;
-								EspejoK = k;
 								//sem_wait(&semD);
 								//sem_post(&semI);
 								break;
 							} else {
 								//Pasa right
 								printf("Paso el %d del carril derecho\n", turnoRight);
+								SalidaBicis(turnoRight, salida, 'R');
 							}
 						}
 						sem_post(&mutex);
@@ -130,15 +132,11 @@ int CuantasB ( FILE *fp,int type){
 
 }
 
-void Paso(sem_t mutex, sem_t semDown, sem_t semUp, int DaPaso, int CedePaso) {
-	if (DaPaso > CedePaso) {
-		sem_wait(&semDown);
-		sem_post(&semUp);
-	} else {
-		sem_wait(&mutex);
-		printf("Estoy dando paso\n");
-		sem_post(&mutex);
-	}
+void SalidaBicis(int Bicis, FILE *salida, char sentido) {
+	char texto[20];
+
+	sprintf(texto, "%d %c", Bicis, sentido);
+	fprintf(salida,"%s\n", texto);
 }
 
 void Bicis(int a[], int type,FILE *fp){
