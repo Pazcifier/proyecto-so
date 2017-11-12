@@ -63,7 +63,7 @@ int main(int argc, char const *argv[]){
 			}
 			sem_init(&mutex, 1, 1);
 
-
+				//Con un while acá podría funcionar pero explota
 				for (int i = 0; i < 2; i++) {
 					if (fork() == 0) {
 						break;
