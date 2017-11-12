@@ -7,9 +7,11 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <stdbool.h>
 
 void Bicis(int a[], int type, FILE *fp);
 int CuantasB(FILE *fp,int type);
+void Paso(sem_t mutex, sem_t semDown, sem_t semUp, int DaPaso, int CedePaso);
 
 int main(int argc, char const *argv[]){
 	//sem_t *semI =sem_open("Izq",O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP,1);
@@ -48,59 +50,73 @@ int main(int argc, char const *argv[]){
 
 			turnoLeft = BicisLeft[0];
 			turnoRight = BicisRight[0];
+			bool turno;
 
 			if (turnoLeft > turnoRight) {
 				sem_init(&semI, 1, -1);
 				sem_init(&semD, 1, 0);
+				turno = false;
 			}	else {
 				sem_init(&semI, 1, 0);
 				sem_init(&semD, 1, -1);
+				turno = true;
 			}
 			sem_init(&mutex, 1, 1);
+			int EspejoJ = 0;
+			int EspejoK = 0;
+			bool terminado = false;
 
-			if (fork() == 0) {
-				printf("Estoy en la izquierda\n");
-				//sem_init(&semI, 1, 1);
-				//printf("Semáforo inicializado\n");
-				for (int i = 0; i <= izq; i++) {		//Proceso hijo se encarga de las bicicletas de la izquierda
-					turnoLeft = BicisLeft[i];
-					printf("TurnoLeft: %d\n", turnoLeft);
-					if (turnoLeft > turnoRight) {
-						sem_post(&semD);
-						sem_wait(&semI);
+
+			while (!terminado) {
+				for (int i = 0; i < 2; i++) {
+					if (fork() == 0) {
+						break;
 					} else {
-						//Pasa left
+						//printf("Soy un proceso\n");
+						if (turno) {
+							sem_wait(&mutex);
+							for (int j = EspejoJ; j <= izq; j++) {
+								turnoLeft = BicisLeft[j];
+								printf("TurnoLeft: %d\n", turnoLeft);
+								if (turnoLeft > turnoRight) {
+									turno = false;
+									EspejoJ = j;
+									//sem_wait(&semI);
+									//sem_post(&semD);
+									break;
+								} else {
+									//Pasa left
+									printf("Paso el %d del carril izquierdo\n", turnoLeft);
+								}
+							}
+							sem_post(&mutex);
+						} else {
 						sem_wait(&mutex);
-						printf("Paso el %d del carril izquierdo\n", turnoLeft);
+						for (int k = EspejoK; k <= der; k++) {
+							turnoRight = BicisRight[k];
+							printf("TurnoRight: %d\n", turnoRight);
+							if (turnoRight > turnoLeft) {
+								turno = true;
+								EspejoK = k;
+								//sem_wait(&semD);
+								//sem_post(&semI);
+								break;
+							} else {
+								//Pasa right
+								printf("Paso el %d del carril derecho\n", turnoRight);
+							}
+						}
 						sem_post(&mutex);
 					}
 				}
-			} else {
-				printf("Estoy en la derecha\n");
-				//sem_init(&semD, 1, 1);
-				//printf("Semáforo inicializado\n");
-				for (int j = 0; j <= der; j++) {		//Proceso padre se encarga de las bicicletas de la derecha NOTA: ¿con el else en fork() se evitará que el hijo haga el código?
-					turnoRight = BicisRight[j];
-					printf("TurnoRight: %d\n", turnoRight);
-					if (turnoRight > turnoLeft) {
-						sem_post(&semI);
-						sem_wait(&semD);
-					} else {
-						//Pasa right
-						sem_wait(&mutex);
-						printf("Paso el %d del carril derecho\n", turnoRight);
-						sem_post(&mutex);
-					}
-				}
-
 			}
-
-
-
-
+			if ((EspejoJ == izq) && (EspejoK == der)) {
+				terminado = true;
+			}
   	}
   	fclose(fp);
 	return 0;
+}
 }
 
 
@@ -120,6 +136,17 @@ int CuantasB ( FILE *fp,int type){
     }
     return sentido;
 
+}
+
+void Paso(sem_t mutex, sem_t semDown, sem_t semUp, int DaPaso, int CedePaso) {
+	if (DaPaso > CedePaso) {
+		sem_wait(&semDown);
+		sem_post(&semUp);
+	} else {
+		sem_wait(&mutex);
+		printf("Estoy dando paso\n");
+		sem_post(&mutex);
+	}
 }
 
 void Bicis(int a[], int type,FILE *fp){
