@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -31,14 +30,14 @@ int main(int argc, char const *argv[]) {
   double tiempo_cpu; //Usado para calcular el tiempo final
 
   fp=fopen(argv[1],"r");
-  if (fp==NULL) {fputs ("File error",stderr); exit (1);
+  if (fp==NULL) {fputs ("File error\n",stderr); exit (1);
   } else {
     cont = numLineas(fp);
     rewind(fp);
     lineasTrabajador = cont/n;
     lineasTrabajadorUltimo = cont%n + cont/n;
 
-    
+
       for(int i = 0; i < n; i++) {
         hp[i].archivo = fp;
         hp[i].nroHilo = i;
@@ -59,7 +58,7 @@ int main(int argc, char const *argv[]) {
       for (int i = 0; i < n; i++) {
         primosTotal += hp[i].primos;
       }
-    
+
     printf("Cantidad total de primos: %d\n", primosTotal);
   }
   return 0;

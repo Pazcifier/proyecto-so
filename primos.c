@@ -37,7 +37,7 @@ int main(int argc, char const *argv[]) {
   }
 
   fp=fopen(argv[1],"r");
-  if (fp==NULL) {fputs ("File error",stderr); exit (1);
+  if (fp==NULL) {fputs ("File error\n",stderr); exit (1);
   } else {
       cont = numLineas(fp);
       rewind(fp);
@@ -47,7 +47,7 @@ int main(int argc, char const *argv[]) {
       if (strcmp(argv[2], "-p") == 0) {
         comienzo = clock();
         for(int i = 0; i < n; i++) {
-          if (fork == 0) {
+          if (fork() == 0) {
             signal(SIGINT,SIG_IGN);
             break;
           } else {
@@ -86,7 +86,7 @@ int main(int argc, char const *argv[]) {
 void manejadorSignal(int signo){
 	if (signo == SIGINT){
 		printf("I’m sorry Dave. I’m afraid I can’t do that.\n");
-	
+
 	signal(SIGINT,SIG_DFL);
 	}
 
