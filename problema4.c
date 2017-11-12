@@ -64,7 +64,6 @@ int main(int argc, char const *argv[]){
 			}
 			sem_init(&mutex, 1, 1);
 
-			salida = fopen("salidabicis.txt", "a");
 				//Con un while acá podría funcionar pero explota
 				for (int i = 0; i < 2; i++) {
 					if (fork() == 0) {
@@ -135,8 +134,10 @@ int CuantasB ( FILE *fp,int type){
 void SalidaBicis(int Bicis, FILE *salida, char sentido) {
 	char texto[20];
 
+	salida = fopen("salidabicis.txt", "a");
 	sprintf(texto, "%d %c", Bicis, sentido);
 	fprintf(salida,"%s\n", texto);
+	fclose(salida);
 }
 
 void Bicis(int a[], int type,FILE *fp){
