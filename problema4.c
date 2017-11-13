@@ -62,12 +62,8 @@ int main(int argc, char const *argv[]){
 				turno = true;
 			}
 			sem_init(&mutex, 1, 1);
-			int EspejoJ = 0;
-			int EspejoK = 0;
-			bool terminado = false;
 
 
-			while (!terminado) {
 				for (int i = 0; i < 2; i++) {
 					if (fork() == 0) {
 						break;
@@ -75,7 +71,7 @@ int main(int argc, char const *argv[]){
 						//printf("Soy un proceso\n");
 						if (turno) {
 							sem_wait(&mutex);
-							for (int j = EspejoJ; j <= izq; j++) {
+							for (int j = 0; j <= izq; j++) {
 								turnoLeft = BicisLeft[j];
 								printf("TurnoLeft: %d\n", turnoLeft);
 								if (turnoLeft > turnoRight) {
@@ -92,7 +88,7 @@ int main(int argc, char const *argv[]){
 							sem_post(&mutex);
 						} else {
 						sem_wait(&mutex);
-						for (int k = EspejoK; k <= der; k++) {
+						for (int k = 0; k <= der; k++) {
 							turnoRight = BicisRight[k];
 							printf("TurnoRight: %d\n", turnoRight);
 							if (turnoRight > turnoLeft) {
@@ -110,10 +106,6 @@ int main(int argc, char const *argv[]){
 					}
 				}
 			}
-			if ((EspejoJ == izq) && (EspejoK == der)) {
-				terminado = true;
-			}
-  	}
   	fclose(fp);
 	return 0;
 }
